@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "546963471413",
+    "project_id": "yarana-7acd0",
+    "storage_bucket": "yarana-7acd0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546963471413:android:4816c62886c16cd3ac457c",
+        "android_client_info": {
+          "package_name": "com.yarana"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "546963471413-eo72fl1unvcjt7n574t040606kfgq0di.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yarana",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "546963471413-jp55nngev1m2hgtvcliqoun0hhrhklm9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAK-GdaBB6Gzxr5_iPjcz6AUV1J9dd2BtY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "546963471413-jp55nngev1m2hgtvcliqoun0hhrhklm9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

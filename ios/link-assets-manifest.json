@@ -1,0 +1,17 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Jost-ExtraLight.ttf",
+      "sha1": "54be3cc77c6549782292202b0027781060fe24ee"
+    },
+    {
+      "path": "assets/fonts/Jost-Regular.ttf",
+      "sha1": "b22e9ed8eb939a7d7f4c4044f94e981ff57818e6"
+    },
+    {
+      "path": "assets/fonts/Zeyada-Regular.ttf",
+      "sha1": "af01e6fc3e0b4ccdd86d03509add7b89a0da7f57"
+    }
+  ]
+}
