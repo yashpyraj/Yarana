@@ -1,4 +1,11 @@
-import React, {useState, useEffect, useRef, useContext} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+  useContext,
+} from 'react';
 import {
   View,
   TextInput,
@@ -6,43 +13,50 @@ import {
   StyleSheet,
   Animated,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import theme from '../components/theme';
-type UserData = {
-  id: string;
-  name: string;
-  email: string;
-  photoURL: string;
-};
 import {AuthContext} from '../App';
 import Text from '../components/text';
 
-function UserSearch() {
+type UserData = {
+  name: string;
+  email: string;
+  photoURL: string;
+  uid: string;
+};
+
+const UserSearch = React.memo(() => {
+  const {user} = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [searchResults, setSearchResults] = useState<UserData[]>([]);
-  const [err, setErr] = useState<string>('');
+  const [error, setError] = useState('');
   const [showResults, setShowResults] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const {userData, setUser} = useContext(AuthContext);
-  console.log(userData);
+  const currentUser = useMemo(() => user._user, [user._user]);
   useEffect(() => {
-    if (username === '') {
+    if (!username) {
       setSearchResults([]);
       setShowResults(false);
       return;
     }
 
-    firestore()
-      .collection('users')
-      .where('name', '>=', username)
-      .where('name', '<=', username + '\uf8ff')
-      .get()
-      .then(querySnapshot => {
+    const searchUsers = async () => {
+      try {
+        const querySnapshot = await firestore()
+          .collection('users')
+          .where('name', '>=', username)
+          .where('name', '<=', username + '\uf8ff')
+
+          .get();
+
         const results: UserData[] = [];
         querySnapshot.forEach(doc => {
           const userData = doc.data() as UserData;
-          results.push(userData);
+          if (userData.uid !== currentUser.uid) {
+            results.push(userData);
+          }
         });
         setSearchResults(results);
         setShowResults(true);
@@ -51,24 +65,88 @@ function UserSearch() {
           duration: 500,
           useNativeDriver: true,
         }).start();
-      })
-      .catch(error => {
+      } catch (error) {
         console.log(error);
-        setErr(error.message);
-      });
-  }, [username]);
+        setError(error.message);
+      }
+    };
 
-  const renderItem = ({item}: {item: UserData}) => {
-    return (
-      <View style={styles.result}>
-        <Image source={{uri: item.photoURL}} style={styles.image} />
-        <View>
-          <Text>{item.name}</Text>
-          <Text>{item.email}</Text>
-        </View>
-      </View>
-    );
-  };
+    searchUsers();
+  }, [username, fadeAnim]);
+
+  const renderItem = useCallback(
+    ({item}: {item: UserData}) => {
+      const onSelect = async () => {
+        console.log(currentUser, item);
+        // code to handle selection of the user item
+        const combinedId =
+          currentUser.uid > item.uid
+            ? currentUser.uid + item.uid
+            : item.uid + currentUser.uid;
+
+        try {
+          const user = await firestore()
+            .collection('chats')
+            .doc(combinedId)
+            .get();
+          if (!user.exists) {
+            firestore()
+              .collection('chats')
+              .doc(combinedId)
+              .set({
+                messages: [],
+              })
+              .then(() => {
+                console.log('Chats added!');
+              });
+            firestore()
+              .collection('usersChat')
+              .doc(currentUser.uid)
+              .update({
+                [combinedId + 'userChats']: {
+                  uid: item.uid,
+                  name: item.name,
+                  photoURL: item.photoURL,
+                },
+                [combinedId + '.date']: firestore.FieldValue.serverTimestamp(),
+              })
+              .then(() => {
+                console.log('User updated!');
+              });
+            firestore()
+              .collection('usersChat')
+              .doc(item.uid)
+              .update({
+                [combinedId + 'userChats']: {
+                  uid: currentUser.uid,
+                  name: currentUser.displayName,
+                  photoURL: currentUser.photoURL,
+                },
+                [combinedId + '.date']: firestore.FieldValue.serverTimestamp(),
+              })
+              .then(() => {
+                console.log('User updated!');
+              });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+        console.log('Selected user:', item);
+        setUsername('');
+      };
+
+      return (
+        <TouchableOpacity style={styles.result} onPress={onSelect}>
+          <Image source={{uri: item.photoURL}} style={styles.image} />
+          <View>
+            <Text>{item.name}</Text>
+            <Text>{item.email}</Text>
+          </View>
+        </TouchableOpacity>
+      );
+    },
+    [currentUser],
+  );
 
   return (
     <View style={styles.container}>
@@ -77,13 +155,14 @@ function UserSearch() {
           placeholder="Search to Add"
           value={username}
           onChangeText={setUsername}
+          placeholderTextColor="black"
           style={styles.input}
         />
       </View>
       {showResults && (
         <Animated.View style={[styles.results, {opacity: fadeAnim}]}>
-          {err ? (
-            <Text style={styles.error}>{err}</Text>
+          {error ? (
+            <Text style={styles.error}>{error}</Text>
           ) : (
             <FlatList
               data={searchResults}
@@ -95,7 +174,7 @@ function UserSearch() {
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -103,21 +182,21 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.dark,
   },
   inputContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.colors.white,
   },
   input: {
     fontSize: 16,
     color: 'black',
   },
   results: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.colors.white,
   },
   result: {
     padding: 10,
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: theme.colors.dark,
   },
   error: {
     color: 'red',

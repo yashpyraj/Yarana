@@ -1,3 +1,4 @@
+import React, {useContext, useEffect, useState, memo, useCallback} from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -6,19 +7,17 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
 
 import theme from '../components/theme';
 import UserSearch from './UserSearch';
-const HomeScreen = () => {
+
+const HomeScreen = memo(() => {
   return (
     <View style={{flex: 1, backgroundColor: '#1b1b1b'}}>
       <UserSearch />
     </View>
   );
-};
-
-export default HomeScreen;
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -71,3 +70,5 @@ const styles = StyleSheet.create({
     color: '#999',
   },
 });
+
+export default HomeScreen;
