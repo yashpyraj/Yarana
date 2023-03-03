@@ -7,6 +7,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import Login from './screens/Login';
 import Sidebar from './screens/Sidebar';
+import {ChatContextProvider} from './components/userContext';
+import Chat from './screens/Chat';
 
 type Children = {
   children: React.ReactNode;
@@ -31,7 +33,10 @@ function ChatStack(): JSX.Element {
       initialRouteName="Home">
       <Drawer.Screen
         name="Home"
-        component={HomeScreen}
+        // component={HomeScreen}
+        component={() => {
+          return <HomeScreen />;
+        }}
         options={{
           title: 'Chats',
           headerStyle: {
@@ -45,7 +50,9 @@ function ChatStack(): JSX.Element {
       />
       <Drawer.Screen
         name="About"
-        component={About}
+        component={() => {
+          return <About />;
+        }}
         options={{
           title: 'About',
           headerStyle: {
@@ -56,6 +63,11 @@ function ChatStack(): JSX.Element {
             fontFamily: 'Jost-Regular',
           },
         }}
+      />
+      <Stack.Screen
+        name="Chat"
+        component={Chat}
+        options={{headerShown: false}}
       />
     </Drawer.Navigator>
   );
@@ -89,7 +101,9 @@ function RootNavigator(): JSX.Element {
 function App(): JSX.Element {
   return (
     <AuthUserProvider>
-      <RootNavigator />
+      <ChatContextProvider>
+        <RootNavigator />
+      </ChatContextProvider>
     </AuthUserProvider>
   );
 }

@@ -103,7 +103,7 @@ const UserSearch = React.memo(() => {
               .collection('usersChat')
               .doc(currentUser.uid)
               .update({
-                [combinedId + 'userChats']: {
+                [combinedId + '.userChats']: {
                   uid: item.uid,
                   name: item.name,
                   photoURL: item.photoURL,
@@ -117,7 +117,7 @@ const UserSearch = React.memo(() => {
               .collection('usersChat')
               .doc(item.uid)
               .update({
-                [combinedId + 'userChats']: {
+                [combinedId + '.userChats']: {
                   uid: currentUser.uid,
                   name: currentUser.displayName,
                   photoURL: currentUser.photoURL,
@@ -178,7 +178,7 @@ const UserSearch = React.memo(() => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: theme.colors.dark,
   },
   inputContainer: {

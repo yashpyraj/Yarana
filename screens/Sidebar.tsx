@@ -98,10 +98,6 @@ const Sidebar = ({state, navigation}: DrawerContentComponentProps) => {
       <TouchableOpacity onPress={signOut} style={styles.signOutButton}>
         <Text style={styles.signOutButtonText}>SignOut</Text>
       </TouchableOpacity>
-
-      {/* <View style={styles.lottieContainer}>
-        <LottieView source={require('../assets/lotti.json')} autoPlay loop />
-      </View> */}
     </ImageBackground>
   );
 };

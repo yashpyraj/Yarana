@@ -14,6 +14,7 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import Text from '../components/text';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import messaging from '@react-native-firebase/messaging';
 //#CBFF97
 
 function Login(): JSX.Element {
@@ -32,6 +33,7 @@ function Login(): JSX.Element {
     await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
     // Get the users ID token
     const {idToken} = await GoogleSignin.signIn();
+    const fcmToken = await messaging().getToken();
 
     // Create a Google credential with the token
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
@@ -47,11 +49,18 @@ function Login(): JSX.Element {
         email: user.email,
         photoURL: user.photoURL,
         uid: user.uid,
+        fcmToken: fcmToken,
       })
       .then(() => {
         console.log('User added!');
       });
-    firestore().collection('usersChat').doc(user.uid).set({});
+    const usersChat = await firestore()
+      .collection('usersChat')
+      .doc(user.uid)
+      .get();
+    if (!usersChat.exists) {
+      firestore().collection('usersChat').doc(user.uid).set({});
+    }
   }
 
   return (
