@@ -19,6 +19,9 @@ import firestore from '@react-native-firebase/firestore';
 import theme from '../components/theme';
 import {AuthContext} from '../App';
 import Text from '../components/text';
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
+
+type MyFunctionType = () => void;
 
 type UserData = {
   name: string;
@@ -27,18 +30,25 @@ type UserData = {
   uid: string;
 };
 
-const UserSearch = React.memo(() => {
+const UserSearch = React.memo(({closeModal}) => {
   const {user} = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [searchResults, setSearchResults] = useState<UserData[]>([]);
   const [error, setError] = useState('');
   const [showResults, setShowResults] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim1 = useRef(new Animated.Value(0)).current;
+
   const currentUser = useMemo(() => user._user, [user._user]);
   useEffect(() => {
     if (!username) {
       setSearchResults([]);
       setShowResults(false);
+      Animated.timing(fadeAnim1, {
+        toValue: 1,
+        duration: 700,
+        useNativeDriver: true,
+      }).start();
       return;
     }
 
@@ -62,6 +72,11 @@ const UserSearch = React.memo(() => {
         setShowResults(true);
         Animated.timing(fadeAnim, {
           toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }).start();
+        Animated.timing(fadeAnim1, {
+          toValue: 0,
           duration: 500,
           useNativeDriver: true,
         }).start();
@@ -133,15 +148,19 @@ const UserSearch = React.memo(() => {
         }
         console.log('Selected user:', item);
         setUsername('');
+        closeModal();
       };
 
       return (
         <TouchableOpacity style={styles.result} onPress={onSelect}>
-          <Image source={{uri: item.photoURL}} style={styles.image} />
-          <View>
-            <Text>{item.name}</Text>
-            <Text>{item.email}</Text>
+          <View style={styles.row}>
+            <Image source={{uri: item.photoURL}} style={styles.image} />
+            <View>
+              <Text style={styles.white}>{item.name}</Text>
+              <Text style={styles.white}>{item.email}</Text>
+            </View>
           </View>
+          <EvilIcons name="plus" style={styles.icon} size={27} />
         </TouchableOpacity>
       );
     },
@@ -172,24 +191,46 @@ const UserSearch = React.memo(() => {
           )}
         </Animated.View>
       )}
+
+      <Animated.View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: 20,
+          opacity: fadeAnim1,
+        }}>
+        <Text style={styles.white}>
+          * To search for your friend's name, please ensure that you type it
+          correctly, as it is case-sensitive matters. Additionally, please
+          search for my name,{' '}
+          <Text style={{color: theme.colors.primary}}>Yash raj</Text>.
+        </Text>
+      </Animated.View>
     </View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    backgroundColor: theme.colors.dark,
+    zIndex: 10,
+    backgroundColor: theme.colors.grey,
   },
   inputContainer: {
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.gray,
+    borderRadius: 20,
+    marginHorizontal: 20,
+    padding: 2,
+    paddingStart: 5,
+    marginTop: 10,
   },
   input: {
     fontSize: 16,
-    color: 'black',
+    color: theme.colors.primary,
   },
   results: {
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.gray,
+    borderRadius: 10,
+    margin: 20,
   },
   result: {
     padding: 10,
@@ -197,6 +238,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.dark,
+    justifyContent: 'space-between',
   },
   error: {
     color: 'red',
@@ -207,7 +249,17 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    marginRight: 10,
+  },
+  white: {
+    color: 'white',
+    marginHorizontal: 30,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    color: theme.colors.primary,
   },
 });
 

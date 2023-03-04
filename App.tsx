@@ -37,16 +37,7 @@ function ChatStack(): JSX.Element {
         component={() => {
           return <HomeScreen />;
         }}
-        options={{
-          title: 'Chats',
-          headerStyle: {
-            backgroundColor: '#1b1b1b',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontFamily: 'Jost-Regular',
-          },
-        }}
+        options={{headerShown: false}}
       />
       <Drawer.Screen
         name="About"
