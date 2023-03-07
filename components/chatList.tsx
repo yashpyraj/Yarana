@@ -48,16 +48,14 @@ const ChatList = React.memo(() => {
   const formatDate = (timestamp: string): string => {
     const date = new Date(timestamp);
     const now = new Date();
-    const diff = Math.abs(now.getTime() - date.getTime());
+    const diff = now.getTime() - date.getTime();
 
     const minutes = Math.floor(diff / 60000);
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (days > 2) {
+    if (days > 1) {
       return date.toLocaleDateString();
-    } else if (days === 2) {
-      return 'Yesterday';
     } else if (days === 1) {
       return 'Yesterday';
     } else if (hours >= 1) {
@@ -107,12 +105,14 @@ const ChatList = React.memo(() => {
     offset: 90 * index,
     index,
   });
-
+  console.log(Object.entries(chats));
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Chats</Text>
       <FlatList
-        data={Object.entries(chats)?.sort((a, b) => a[1].date - b[1].date)}
+        data={Object.entries(chats)?.sort(
+          (a, b) => b[1].date?.seconds - a[1].date?.seconds,
+        )}
         keyExtractor={item => item[0] + item[1].userChats.uid}
         renderItem={renderItem}
         getItemLayout={getItemLayout}
@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderRadius: 50,
     backgroundColor: theme.colors.gray,
+    marginVertical: 5,
     padding: 10,
   },
   itemImage: {
@@ -160,6 +161,7 @@ const styles = StyleSheet.create({
   itemLastMessage: {
     color: 'white',
     opacity: 0.5,
+    marginRight: 20,
   },
   timestamp: {
     color: theme.colors.primary,

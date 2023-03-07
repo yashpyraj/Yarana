@@ -9,12 +9,15 @@ import Login from './screens/Login';
 import Sidebar from './screens/Sidebar';
 import {ChatContextProvider} from './components/userContext';
 import Chat from './screens/Chat';
-
+import AnimatedLottieView from 'lottie-react-native';
+import {View, LogBox, SafeAreaView} from 'react-native';
 type Children = {
   children: React.ReactNode;
 };
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 export const AuthContext = createContext({});
 
 const AuthUserProvider = ({children}: Children) => {
@@ -33,17 +36,12 @@ function ChatStack(): JSX.Element {
       initialRouteName="Home">
       <Drawer.Screen
         name="Home"
-        // component={HomeScreen}
-        component={() => {
-          return <HomeScreen />;
-        }}
+        component={HomeScreen}
         options={{headerShown: false}}
       />
       <Drawer.Screen
         name="About"
-        component={() => {
-          return <About />;
-        }}
+        component={About}
         options={{
           title: 'About',
           headerStyle: {
@@ -90,7 +88,19 @@ function RootNavigator(): JSX.Element {
 }
 
 function App(): JSX.Element {
-  return (
+  const [loading, setLoading] = useState<boolean>(true);
+
+  return loading ? (
+    <View style={{flex: 1}}>
+      <AnimatedLottieView
+        source={require('./assets/routine.json')}
+        autoPlay
+        resizeMode="cover"
+        loop={false}
+        onAnimationFinish={() => setLoading(false)}
+      />
+    </View>
+  ) : (
     <AuthUserProvider>
       <ChatContextProvider>
         <RootNavigator />

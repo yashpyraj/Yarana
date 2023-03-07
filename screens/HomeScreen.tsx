@@ -4,6 +4,7 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
+  useWindowDimensions,
   Modal,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -12,15 +13,20 @@ import ChatList from '../components/chatList';
 import theme from '../components/theme';
 import {useNavigation} from '@react-navigation/native';
 import UserSearch from './UserSearch';
+import Animated, {FadeIn} from 'react-native-reanimated';
+import GroupCreateForm from '../components/GroupCreateForm';
 
 const HomeScreen = memo(() => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible1, setModalVisible1] = useState(false);
   const navigation = useNavigation();
   const openModal = useCallback(() => setModalVisible(true), []);
   const closeModal = useCallback(() => setModalVisible(false), []);
+  const openModal1 = useCallback(() => setModalVisible1(true), []);
+  const closeModal1 = useCallback(() => setModalVisible1(false), []);
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={styles.container} entering={FadeIn.duration(1000)}>
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -44,8 +50,28 @@ const HomeScreen = memo(() => {
           <UserSearch closeModal={closeModal} />
         </View>
       </Modal>
+      <Modal
+        visible={modalVisible1}
+        animationType="fade"
+        hardwareAccelerated={true}
+        onRequestClose={closeModal1}
+        transparent={true}>
+        <View style={styles.modal}>
+          <TouchableOpacity onPress={closeModal1} style={styles.closeButton}>
+            <AntDesign name="close" size={25} color={theme.colors.primary} />
+          </TouchableOpacity>
+          <Text style={{color: 'white', fontSize: 20}}>Create a Group</Text>
+
+          <View style={[styles.container, {alignItems: 'center'}]}>
+            <GroupCreateForm />
+          </View>
+        </View>
+      </Modal>
+      <TouchableOpacity onPress={openModal1}>
+        <Text style={[styles.addFriends, {marginLeft: 10}]}>Create group</Text>
+      </TouchableOpacity>
       <ChatList />
-    </View>
+    </Animated.View>
   );
 });
 
@@ -84,6 +110,14 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     alignSelf: 'flex-end',
+  },
+  input: {
+    height: 40,
+    width: '100%',
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
   },
 });
 

@@ -7,6 +7,8 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   TouchableOpacity,
+  Image,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useContext, useState, useEffect, useMemo, useRef} from 'react';
 import Text from '../components/text';
@@ -21,21 +23,24 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 interface IMessage {
   id: string;
   senderId: string;
+  photoURL: 'string';
   text: string;
   date: number;
 }
 
 const Chat = ({navigation, route}: {navigation: any; route: any}) => {
   const [messages, setMessages] = useState<IMessage[]>([]);
+  const [loading, setLoading] = useState(true);
   const [text, setText] = useState<string>('');
   const {data} = useContext(ChatContext);
   const {user} = useContext(AuthContext);
   const {width, height} = useWindowDimensions();
   const currentUser = useMemo(() => user._user, [user._user]);
   const flatListRef = useRef<FlatList<IMessage>>(null);
+  console.log(route.params.type);
 
   useEffect(() => {
-    flatListRef.current?.scrollToEnd({animated: true});
+    // flatListRef.current?.scrollToEnd({animated: true});
 
     const unsubscribe = firestore()
       .collection('chats')
@@ -54,9 +59,11 @@ const Chat = ({navigation, route}: {navigation: any; route: any}) => {
     if (trimmedMessage === '') {
       return;
     }
+
     const newMessage: IMessage = {
       id: generateRandomId(),
       senderId: currentUser.uid,
+      photoURL: currentUser.photoURL,
       text: trimmedMessage,
       date: Date.now(),
     };
@@ -128,45 +135,79 @@ const Chat = ({navigation, route}: {navigation: any; route: any}) => {
       return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
     }
   }
-  const renderItem = React.useCallback(({item}) => {
-    const sentByMe = currentUser.uid == item.senderId;
-    const timeString = formatTimestamp(item?.date || 0);
+  const renderItem = React.useCallback(
+    ({item}) => {
+      const sentByMe = currentUser.uid == item.senderId;
+      const timeString = formatTimestamp(item?.date || 0);
 
+      return (
+        <View
+          style={[
+            !sentByMe ? styles.outGoingStyle : styles.incomingStyle,
+            {width: width / 2},
+          ]}
+          key={item.id}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
+            <Text style={{fontSize: 10, opacity: 0.5}}>
+              {sentByMe ? 'You' : data.user.name}
+            </Text>
+            <Text style={{fontSize: 10, opacity: 0.5}}>{timeString}</Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
+            {route.params.userChats.type && (
+              <Image
+                source={{uri: item.photoURL}}
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 10,
+                  marginRight: 5,
+                }}
+              />
+            )}
+            <Text>{item.text}</Text>
+          </View>
+        </View>
+      );
+    },
+    [route],
+  );
+
+  if (loading) {
     return (
       <View
-        style={[
-          !sentByMe ? styles.outGoingStyle : styles.incomingStyle,
-          {width: width / 2},
-        ]}
-        key={item.id}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-          <Text style={{fontSize: 10, opacity: 0.5}}>
-            {sentByMe ? 'You' : data.user.name}
-          </Text>
-          <Text style={{fontSize: 10, opacity: 0.5}}>{timeString}</Text>
-        </View>
-        <Text>{item.text}</Text>
+        style={{
+          flex: 1,
+          backgroundColor: '#1b1b1b',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <ActivityIndicator />
       </View>
     );
-  }, []);
-
+  }
   return (
-    <View style={{flex: 1, backgroundColor: '#1b1b1b'}}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: '#1b1b1b',
+      }}>
       <ChatHeader navigation={navigation} route={route} />
       <View style={{flex: 1}}>
         <FlatList
           data={messages}
           keyExtractor={item => item.id}
           renderItem={renderItem}
-          onContentSizeChange={() =>
-            flatListRef.current.scrollToEnd({animated: true})
-          }
-          onLayout={() => flatListRef.current.scrollToEnd({animated: true})}
           ref={flatListRef}
         />
       </View>

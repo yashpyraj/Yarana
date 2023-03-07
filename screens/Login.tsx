@@ -15,6 +15,7 @@ import Text from '../components/text';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
+import Animated, {FadeIn} from 'react-native-reanimated';
 //#CBFF97
 
 function Login(): JSX.Element {
@@ -65,10 +66,11 @@ function Login(): JSX.Element {
 
   return (
     // <SafeAreaView>
+
     <ImageBackground
       style={styles.backgroundImage}
       source={require('../assets/bg.png')}>
-      <View style={styles.container}>
+      <Animated.View style={styles.container} entering={FadeIn.duration(1000)}>
         <Image
           style={{
             width: 200,
@@ -77,7 +79,8 @@ function Login(): JSX.Element {
           source={require('../assets/lodo.png')}
         />
 
-        <View
+        <Animated.View
+          entering={FadeIn.duration(1000)}
           style={{
             backgroundColor: 'white',
             marginTop: 30,
@@ -113,7 +116,7 @@ function Login(): JSX.Element {
               Welcome to Yaarana!, a small chat app for our small chat group.
             </Text>
           </View>
-        </View>
+        </Animated.View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={onGoogleButtonPress}
@@ -128,7 +131,7 @@ function Login(): JSX.Element {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </Animated.View>
 
       {/* Your content goes here */}
     </ImageBackground>

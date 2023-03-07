@@ -17,10 +17,11 @@ export const ChatContextProvider = ({children}: Children) => {
       case 'CHANGE_USER':
         return {
           user: action.payload,
-          chatId:
-            user.uid > action.payload.uid
-              ? user.uid + action.payload.uid
-              : action.payload.uid + user.uid,
+          chatId: action.payload?.type
+            ? action.payload.uid
+            : user.uid > action.payload.uid
+            ? user.uid + action.payload.uid
+            : action.payload.uid + user.uid,
         };
 
       default:
