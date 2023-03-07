@@ -213,10 +213,15 @@ const UserSearch = React.memo(({closeModal}) => {
 const styles = StyleSheet.create({
   container: {
     zIndex: 10,
-    backgroundColor: theme.colors.grey,
+    backgroundColor: theme.colors.dark,
+    marginTop: -20,
+    padding: 10,
+    paddingTop: 20,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
   },
   inputContainer: {
-    backgroundColor: theme.colors.gray,
+    backgroundColor: theme.colors.white,
     borderRadius: 20,
     marginHorizontal: 20,
     padding: 2,
@@ -225,7 +230,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 16,
-    color: theme.colors.primary,
+    color: theme.colors.dark,
   },
   results: {
     backgroundColor: theme.colors.gray,

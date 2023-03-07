@@ -30,14 +30,12 @@ interface IMessage {
 
 const Chat = ({navigation, route}: {navigation: any; route: any}) => {
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [loading, setLoading] = useState(true);
   const [text, setText] = useState<string>('');
   const {data} = useContext(ChatContext);
   const {user} = useContext(AuthContext);
   const {width, height} = useWindowDimensions();
   const currentUser = useMemo(() => user._user, [user._user]);
   const flatListRef = useRef<FlatList<IMessage>>(null);
-  console.log(route.params.type);
 
   useEffect(() => {
     // flatListRef.current?.scrollToEnd({animated: true});
@@ -50,6 +48,7 @@ const Chat = ({navigation, route}: {navigation: any; route: any}) => {
           setMessages(documentSnapshot.data()?.messages ?? []);
         }
       });
+
     return unsubscribe;
   }, [data.chatId]);
 
@@ -153,9 +152,28 @@ const Chat = ({navigation, route}: {navigation: any; route: any}) => {
               alignItems: 'center',
               justifyContent: 'space-between',
             }}>
-            <Text style={{fontSize: 10, opacity: 0.5}}>
-              {sentByMe ? 'You' : data.user.name}
-            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+              {route.params.userChats.type && (
+                <Image
+                  source={{uri: item.photoURL}}
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: 10,
+                    marginRight: 5,
+                  }}
+                />
+              )}
+              <Text style={{fontSize: 10, opacity: 0.5}}>
+                {sentByMe ? 'You' : data.user.name}
+              </Text>
+            </View>
+
             <Text style={{fontSize: 10, opacity: 0.5}}>{timeString}</Text>
           </View>
           <View
@@ -164,17 +182,6 @@ const Chat = ({navigation, route}: {navigation: any; route: any}) => {
               alignItems: 'center',
               justifyContent: 'space-between',
             }}>
-            {route.params.userChats.type && (
-              <Image
-                source={{uri: item.photoURL}}
-                style={{
-                  width: 20,
-                  height: 20,
-                  borderRadius: 10,
-                  marginRight: 5,
-                }}
-              />
-            )}
             <Text>{item.text}</Text>
           </View>
         </View>
@@ -183,19 +190,6 @@ const Chat = ({navigation, route}: {navigation: any; route: any}) => {
     [route],
   );
 
-  if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: '#1b1b1b',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
   return (
     <View
       style={{
@@ -211,16 +205,17 @@ const Chat = ({navigation, route}: {navigation: any; route: any}) => {
           ref={flatListRef}
         />
       </View>
-
-      <View style={styles.inpurStyle}>
-        <TextInput
-          style={styles.input}
-          value={text}
-          onChangeText={setText}
-          onSubmitEditing={handleSend}
-          returnKeyType="send"
-          placeholder="Type your message here"
-        />
+      <View style={styles.inputcontainer}>
+        <View style={styles.inpurStyle}>
+          <TextInput
+            style={styles.input}
+            value={text}
+            onChangeText={setText}
+            onSubmitEditing={handleSend}
+            returnKeyType="send"
+            placeholder="Type your message here"
+          />
+        </View>
 
         <TouchableOpacity style={styles.iconContainer} onPress={handleSend}>
           <MaterialIcons size={24} name="send" />
@@ -271,10 +266,13 @@ const styles = StyleSheet.create({
 
   inpurStyle: {
     backgroundColor: theme.colors.dark,
-    flexDirection: 'row',
     borderWidth: 1,
     borderColor: theme.colors.primary,
     borderRadius: 50,
+    flex: 1,
+  },
+  inputcontainer: {
+    flexDirection: 'row',
   },
   iconContainer: {
     justifyContent: 'center',

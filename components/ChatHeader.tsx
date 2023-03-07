@@ -13,7 +13,8 @@ const ChatHeaderBackButton = ({onPress}) => {
 };
 
 const ChatHeader = ({navigation, route}) => {
-  const {name, photoURL} = route.params.userChats;
+  const {name, photoURL, type} = route.params.userChats;
+  console.log(route.params.userChats);
 
   return (
     <View style={styles.container}>
@@ -22,7 +23,19 @@ const ChatHeader = ({navigation, route}) => {
       </View>
 
       <View style={styles.userDetails}>
-        <Image source={{uri: photoURL}} style={styles.userImage} />
+        {type ? (
+          <Image
+            style={{
+              resizeMode: 'contain',
+              width: 38,
+              height: 38,
+              marginRight: 10,
+            }}
+            source={require('../assets/group.png')}
+          />
+        ) : (
+          <Image source={{uri: photoURL}} style={styles.userImage} />
+        )}
         <Text style={styles.userName}>{name}</Text>
       </View>
     </View>

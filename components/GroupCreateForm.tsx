@@ -111,12 +111,17 @@ const GroupCreateForm = () => {
   };
 
   const data = Object.values(allUsers);
+  console.log(data);
 
-  const userChats = data.map(chat => chat.userChats);
+  const userChats = data
+    .filter(chat => chat.userChats.type !== 'group')
+    .map(chat => chat.userChats);
 
   return (
     <View style={{flex: 1, width: width - 30}}>
-      <Text style={{color: 'white'}}>Group Name:</Text>
+      <Text style={{color: 'white', marginVertical: 10, marginLeft: 5}}>
+        Group Name
+      </Text>
       <TextInput
         value={groupName}
         onChangeText={setGroupName}
@@ -129,7 +134,9 @@ const GroupCreateForm = () => {
       />
       {groupNameError && <Text style={{color: 'red'}}>{groupNameError}</Text>}
 
-      <Text style={{color: 'white'}}>Select Users:</Text>
+      <Text style={{color: 'white', marginVertical: 10, marginLeft: 5}}>
+        Select Users
+      </Text>
       <View></View>
       <MultiSelect
         items={userChats}
@@ -164,7 +171,20 @@ const GroupCreateForm = () => {
         tagTextColor={'white'}
       />
 
-      <Button title="Create Group" onPress={handleSubmit} />
+      <TouchableOpacity
+        onPress={handleSubmit}
+        style={{
+          backgroundColor: '#CBFF97',
+          padding: 20,
+          alignSelf: 'center',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: 30,
+          borderRadius: 70,
+          width: 150,
+        }}>
+        <Text style={{color: 'black', fontWeight: 900}}>Create 💥</Text>
+      </TouchableOpacity>
     </View>
   );
 };

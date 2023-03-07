@@ -1,11 +1,12 @@
 import React, {memo, useState, useCallback} from 'react';
 import {
-  FlatList,
   StyleSheet,
   View,
   TouchableOpacity,
   useWindowDimensions,
   Modal,
+  Image,
+  ImageBackground,
 } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Text from '../components/text';
@@ -33,9 +34,33 @@ const HomeScreen = memo(() => {
           onPress={() => navigation.openDrawer()}>
           <AntDesign name="left" size={25} color={theme.colors.primary} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={openModal}>
-          <Text style={styles.addFriends}>Add Friends</Text>
-        </TouchableOpacity>
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity onPress={openModal}>
+            {/* <Text style={styles.addFriends}>Add Friends</Text> */}
+            <Image
+              style={{
+                resizeMode: 'contain',
+                width: 45,
+                height: 45,
+                borderWidth: 2,
+                marginRight: 10,
+              }}
+              source={require('../assets/friends.png')}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={openModal1}>
+            {/* <Text style={styles.addFriends}>Add Friends</Text> */}
+            <Image
+              style={{
+                resizeMode: 'contain',
+                width: 45,
+                height: 45,
+                borderWidth: 2,
+              }}
+              source={require('../assets/group.png')}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
       <Modal
         visible={modalVisible}
@@ -44,9 +69,14 @@ const HomeScreen = memo(() => {
         onRequestClose={closeModal}
         transparent={true}>
         <View style={styles.modal}>
-          <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
-            <AntDesign name="close" size={25} color={theme.colors.primary} />
-          </TouchableOpacity>
+          <ImageBackground
+            source={require('../assets/friend.png')}
+            resizeMode="contain"
+            style={{height: 200, backgroundColor: 'white'}}>
+            <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
+              <AntDesign name="close" size={25} color={theme.colors.dark} />
+            </TouchableOpacity>
+          </ImageBackground>
           <UserSearch closeModal={closeModal} />
         </View>
       </Modal>
@@ -57,19 +87,32 @@ const HomeScreen = memo(() => {
         onRequestClose={closeModal1}
         transparent={true}>
         <View style={styles.modal}>
-          <TouchableOpacity onPress={closeModal1} style={styles.closeButton}>
-            <AntDesign name="close" size={25} color={theme.colors.primary} />
-          </TouchableOpacity>
-          <Text style={{color: 'white', fontSize: 20}}>Create a Group</Text>
+          <ImageBackground
+            source={require('../assets/group2.png')}
+            resizeMode="contain"
+            style={{height: 200, backgroundColor: 'white'}}>
+            <TouchableOpacity onPress={closeModal1} style={styles.closeButton}>
+              <AntDesign name="close" size={25} color={theme.colors.dark} />
+            </TouchableOpacity>
+          </ImageBackground>
 
-          <View style={[styles.container, {alignItems: 'center'}]}>
+          <View
+            style={[
+              styles.container,
+              {
+                alignItems: 'center',
+                marginTop: -20,
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+              },
+            ]}>
+            <Text style={{color: 'white', fontSize: 20, marginVertical: 20}}>
+              Create Group
+            </Text>
             <GroupCreateForm />
           </View>
         </View>
       </Modal>
-      <TouchableOpacity onPress={openModal1}>
-        <Text style={[styles.addFriends, {marginLeft: 10}]}>Create group</Text>
-      </TouchableOpacity>
       <ChatList />
     </Animated.View>
   );
@@ -102,8 +145,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flex: 1,
     width: '100%',
-    paddingTop: 20,
-    padding: 10,
     elevation: 5,
   },
   closeButton: {

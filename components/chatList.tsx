@@ -69,23 +69,36 @@ const ChatList = React.memo(() => {
 
   const renderItem = ({item}) => {
     const {userChats, lastMessage, date} = item[1];
-    const {name, photoURL} = userChats;
-
+    const {name, photoURL, type} = userChats;
+    console.log(type);
     return (
       <TouchableOpacity
         onPress={() => handleSelect(userChats)}
         style={styles.itemContainer}>
-        <View style={styles.itemImage}>
-          <Image
-            style={{
-              resizeMode: 'contain',
-              width: 38,
-              height: 38,
-              borderRadius: 50,
-            }}
-            source={{uri: photoURL}}
-          />
-        </View>
+        {type ? (
+          <View>
+            <Image
+              style={{
+                resizeMode: 'contain',
+                width: 38,
+                height: 38,
+              }}
+              source={require('../assets/group.png')}
+            />
+          </View>
+        ) : (
+          <View style={styles.itemImage}>
+            <Image
+              style={{
+                resizeMode: 'contain',
+                width: 38,
+                height: 38,
+                borderRadius: 50,
+              }}
+              source={{uri: photoURL}}
+            />
+          </View>
+        )}
 
         <View style={styles.itemContent}>
           <Text style={styles.itemName}>{name}</Text>
